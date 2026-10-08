@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ==================== LEAVE MANAGEMENT ==================== -->
+
+    <!-- List View -->
+    <record id="view_leave_type_list" model="ir.ui.view">
+        <field name="name">leave.type.list</field>
+        <field name="model">leave.type</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="max_days"/>
+                <field name="requires_allocation"/>
+                <field name="active"/>
+                <field name="color"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_leave_type_form" model="ir.ui.view">
+        <field name="name">leave.type.form</field>
+        <field name="model">leave.type</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group col="6">
+                            <field name="name"/>
+                            <field name="code"/>
+                            <field name="max_days"/>
+                        </group>
+                        <group col="6">
+                            <field name="requires_allocation"/>
+                            <field name="active"/>
+                            <field name="color"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_leave_type" model="ir.actions.act_window">
+        <field name="name">Leave Type</field>
+        <field name="res_model">leave.type</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Menu -->
+    <menuitem id="menu_leave_root"
+              name="Leave Management"
+              sequence="1"/>
+
+    <menuitem id="menu_leave_type"
+              name="Leave Type"
+              parent="menu_leave_root"
+              action="action_leave_type"
+              sequence="1"/>
+
+</odoo>

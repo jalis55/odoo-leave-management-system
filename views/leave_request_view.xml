@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==================== LEAVE REQUEST ==================== -->
+
+    <!-- List View -->
+    <record id="view_leave_request_list" model="ir.ui.view">
+        <field name="name">leave.request.list</field>
+        <field name="model">leave.request</field>
+        <field name="arch" type="xml">
+            <list string="Leave Requests"
+                  decoration-info="state == 'draft'"
+                  decoration-warning="state == 'confirm'"
+                  decoration-success="state == 'approved'"
+                  decoration-danger="state in ('refused', 'cancelled')">
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="manager_id"/>
+                <field name="leave_type_id"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="number_of_days"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'draft'"
+                       decoration-warning="state == 'confirm'"
+                       decoration-success="state == 'approved'"
+                       decoration-danger="state in ('refused', 'cancelled')"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Calendar View -->
+    <record id="view_leave_request_calendar" model="ir.ui.view">
+        <field name="name">leave.request.calendar</field>
+        <field name="model">leave.request</field>
+        <field name="arch" type="xml">
+            <calendar date_start="date_from" date_stop="date_to"
+                      mode="month" color="leave_type_color"
+                      string="Leave Calendar">
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="leave_type_id"/>
+                <field name="number_of_days"/>
+                <field name="state"/>
+            </calendar>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_leave_request_search" model="ir.ui.view">
+        <field name="name">leave.request.search</field>
+        <field name="model">leave.request</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="manager_id"/>
+                <field name="leave_type_id"/>
+
+                <filter string="My Leaves" name="my_leaves"
+                        domain="[('employee_id.user_id', '=', uid)]"/>
+                <filter string="To Approve (My Team)" name="to_approve_manager"
+                        domain="[('state', '=', 'confirm'), ('manager_id.user_id', '=', uid)]"/>
+                <separator/>
+                <filter string="To Approve" name="to_approve"
+                        domain="[('state', '=', 'confirm')]"/>
+                <filter string="Approved" name="approved"
+                        domain="[('state', '=', 'approved')]"/>
+                <filter string="Refused" name="refused"
+                        domain="[('state', '=', 'refused')]"/>
+                <filter string="Cancelled" name="cancelled"
+                        domain="[('state', '=', 'cancelled')]"/>
+
+                <group expand="0" string="Group By">
+                    <filter string="Employee" name="group_employee"
+                            context="{'group_by': 'employee_id'}"/>
+                    <filter string="Manager" name="group_manager"
+                            context="{'group_by': 'manager_id'}"/>
+                    <filter string="Leave Type" name="group_leave_type"
+                            context="{'group_by': 'leave_type_id'}"/>
+                    <filter string="State" name="group_state"
+                            context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_leave_request_form" model="ir.ui.view">
+        <field name="name">leave.request.form</field>
+        <field name="model">leave.request</field>
+        <field name="arch" type="xml">
+            <form string="Leave Request">
+                <header>
+                    <button name="action_confirm" string="Confirm" type="object"
+                            class="oe_highlight" invisible="state != 'draft'"/>
+                    <button name="action_approve" string="Approve" type="object"
+                            class="oe_highlight"
+                            invisible="state != 'confirm'"/>
+                    <button name="action_refuse" string="Refuse" type="object"
+                            invisible="state != 'confirm'"/>
+                    <button name="action_cancel" string="Cancel" type="object"
+                            invisible="state not in ('draft', 'confirm', 'approved')"/>
+                    <button name="action_draft" string="Reset to Draft" type="object"
+                            invisible="state not in ('cancelled', 'refused')"/>
+                    <field name="state"
+                           widget="statusbar"
+                           statusbar_visible="draft,confirm,approved"/>
+                </header>
+
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+
+                    <group>
+                        <group>
+                            <field name="employee_id"/>
+                            <field name="manager_id" readonly="1"/>
+                            <field name="leave_type_id"/>
+                        </group>
+                        <group>
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                            <field name="number_of_days" readonly="1"/>
+                            <field name="available_balance" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <group string="Reason">
+                        <field name="reason"
+                                nolabel="1"
+                                placeholder="Reason for leave..."/>
+                    </group>
+                </sheet>
+
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- ==================== GRAPH VIEW ==================== -->
+    <record id="view_leave_request_graph" model="ir.ui.view">
+        <field name="name">leave.request.graph</field>
+        <field name="model">leave.request</field>
+        <field name="arch" type="xml">
+            <graph string="Leave Analysis" type="bar" sample="1">
+                <field name="leave_type_id"/>
+                <field name="number_of_days" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- ==================== PIVOT VIEW ==================== -->
+    <record id="view_leave_request_pivot" model="ir.ui.view">
+        <field name="name">leave.request.pivot</field>
+        <field name="model">leave.request</field>
+        <field name="arch" type="xml">
+            <pivot string="Leave Analysis" sample="1">
+                <field name="employee_id" type="row"/>
+                <field name="leave_type_id" type="col"/>
+                <field name="number_of_days" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_leave_request" model="ir.actions.act_window">
+        <field name="name">Leave Requests</field>
+        <field name="res_model">leave.request</field>
+        <field name="view_mode">kanban,list,form,calendar,graph,pivot</field>
+        <field name="search_view_id" ref="view_leave_request_search"/>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new Leave Request
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu -->
+    <menuitem id="menu_leave_request"
+              name="Leave Requests"
+              parent="menu_leave_root"
+              action="action_leave_request"
+              sequence="2"/>
+
+    <!-- ==================== REPORTING MENU ==================== -->
+    <menuitem id="menu_leave_reporting"
+              name="Reporting"
+              parent="menu_leave_root"
+              sequence="90"/>
+
+    <menuitem id="menu_leave_request_report"
+              name="Leave Analysis"
+              parent="menu_leave_reporting"
+              action="action_leave_request"
+              sequence="1"/>
+
+</odoo>

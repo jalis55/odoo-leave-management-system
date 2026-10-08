@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Leave User can only see their own leave requests -->
+    <record id="leave_request_rule_user" model="ir.rule">
+        <field name="name">Leave Request: User can only see own requests</field>
+        <field name="model_id" ref="model_leave_request"/>
+        <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_leave_user'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- Leave Manager can see everything -->
+    <record id="leave_request_rule_manager" model="ir.rule">
+        <field name="name">Leave Request: Manager full access</field>
+        <field name="model_id" ref="model_leave_request"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_leave_manager'))]"/>
+    </record>
+
+</odoo>

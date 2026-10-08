@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Module Category -->
+    <record id="module_category_leave_management" model="ir.module.category">
+        <field name="name">Leave Management</field>
+        <field name="description">Helps you manage leave requests, allocations and types</field>
+        <field name="sequence">20</field>
+    </record>
+
+    <!-- Leave User Group -->
+    <record id="group_leave_user" model="res.groups">
+        <field name="name">Leave User</field>
+        <field name="category_id" ref="module_category_leave_management"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        <field name="comment">Can create and view their own leave requests. Can see Leave Types.</field>
+    </record>
+
+    <!-- Leave Manager Group -->
+    <record id="group_leave_manager" model="res.groups">
+        <field name="name">Leave Manager</field>
+        <field name="category_id" ref="module_category_leave_management"/>
+        <field name="implied_ids" eval="[(4, ref('group_leave_user'))]"/>
+        <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+        <field name="comment">Full access: can approve/refuse leaves, manage allocations and leave types.</field>
+    </record>
+
+</odoo>
